@@ -1,7 +1,8 @@
 from django.shortcuts import redirect, render
 from django.views import View
-from .models import Project
-from .forms import ProjectForm
+from .models import Project, Tasks
+from .forms import ProjectForm, TasksForm
+
 
 # Create your views here.
 
@@ -47,4 +48,46 @@ class EditProject(View):
         if form.is_valid():
             form.save()
             return redirect('/')
+
+
+# This is view for task management
+class TaskHomeView(View):
+    def get(self, request):
+        tasks = Tasks.objects.all()
+        return render(request, 'core/task.html', {'tasks': tasks})
+
+class AddTask(View):
+    def get(self, request):
+        form = TasksForm()
+        return render(request, 'core/add_task.html', {'form': form})
+    
+    def post(self, request):
+        form = TasksForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('task')
+        return render(request, 'core/add_task.html', {'form': form})
+
+class DeleteTask(View):
+    def post(self, request):
+        data = request.POST
+        task_id = data.get('id')
+        task = Tasks.objects.get(id=task_id)
+        task.delete()
+        return redirect('task')
+
+class EditTask(View):
+    def get(self,request,id):
+        task = Tasks.objects.get(id=id)
+        form = TasksForm(instance=task)
+        return render(request,'core/edit_task.html',{'form':form})
+
+    def post(self,request,id):
+        task = Tasks.objects.get(id=id)
+
+        form = TasksForm(request.POST,instance=task)    
+        if form.is_valid():
+            form.save()
+            return redirect('task')
+
         

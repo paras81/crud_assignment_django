@@ -19,7 +19,7 @@ class AddTask(View):
         form = TaskForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('task')
+            return redirect('task/')
         return render(request, 'task/add_task.html', {'form': form})
 
 class DeleteTask(View):
@@ -28,7 +28,7 @@ class DeleteTask(View):
         task_id = data.get('id')
         task = Task.objects.get(id=task_id)
         task.delete()
-        return redirect('task')
+        return redirect('task/')
 
 class EditTask(View):
     def get(self,request,id):
@@ -42,4 +42,4 @@ class EditTask(View):
         form = TaskForm(request.POST,instance=task)    
         if form.is_valid():
             form.save()
-            return redirect('task')
+            return redirect('task/')
